@@ -67,7 +67,7 @@ npm start
 
 ## 📱 WhatsApp Channel
 
-https://whatsapp.com/channel/0029VbDlXCo3mFY8hg6bS51V
+[**Join the LELOP WhatsApp Channel**](https://whatsapp.com/channel/0029VbDlXCo3mFY8hg6bS51V)
 
 ## 🤝 Nigeria Support / Business
 
@@ -75,7 +75,9 @@ For Nigeria-based support and business enquiries, contact **𝙇𝙀𝙇𝙊𝙋
 
 **+234 816 020 8114**
 
-A dedicated support-group link was not included because the exact group URL was not available in the supplied source. It should be added once the correct group link is provided; no placeholder or invented group link is used.
+### 🇳🇬 Support Channel
+
+Use the official LELOP WhatsApp Channel above for updates, support information and Nigeria-focused business announcements.
 
 ## ⚠️ Security
 
