@@ -1,11 +1,24 @@
 {
   "name": "Cheems-Bot-MD",
-  "version": "8.0.2-2026-lelop",
-  "description": "CheemsBot MD8 2026 deployment build for LELOP",
+  "version": "8.0.1-2026-clean",
+  "description": "CheemsBot MD8 cleaned full build with 2026-compatible Baileys v6 line and command fixes",
   "main": "index.js",
   "type": "commonjs",
-  "scripts": {"start": "node index.js", "start:rent": "node -e \"require('./RentBot.js')\""},
-  "author": "LELOP / based on DGXeon CheemsBot MD8",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "termux",
+    "whatsapp",
+    "2023",
+    "wabase-md",
+    "base",
+    "baileys-md",
+    "bot",
+    "bot-md",
+    "multi-device"
+  ],
+  "author": "DGXeon",
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "6.7.23",
@@ -35,7 +48,7 @@
     "got": "^11.8.3",
     "human-readable": "^0.2.1",
     "javascript-obfuscator": "^4.0.0",
-    "jimp": "1.6.0",
+    "jimp": "^0.16.1",
     "jsdom": "^16.4.0",
     "kirbotz-api": "^0.0.2",
     "lowdb": "^2.1.0",
@@ -90,8 +103,15 @@
     "yt-search": "2.13.1",
     "simple-git": "3.36.0"
   },
-  "repository": {"type":"git","url":"git+https://github.com/Clintonlelop/CheemsBot-IMPROVED-MD8.git"},
-  "bugs": {"url":"https://github.com/Clintonlelop/CheemsBot-IMPROVED-MD8/issues"},
-  "homepage":"https://github.com/Clintonlelop/CheemsBot-IMPROVED-MD8#readme",
-  "engines":{"node":">=20 <25"}
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGXeon/CheemsBot-MD8.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DGXeon/CheemsBot-MD8/issues"
+  },
+  "homepage": "https://github.com/DGXeon/CheemsBot-MD8/#readme",
+  "engines": {
+    "node": ">=20 <25"
+  }
 }
