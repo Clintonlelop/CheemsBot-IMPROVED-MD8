@@ -8,7 +8,6 @@ const {
 	initInMemoryKeyStore,
 	DisconnectReason,
 	AnyMessageContent,
-        makeInMemoryStore,
 	makeCacheableSignalKeyStore,
 	useMultiFileAuthState,
 	delay,
@@ -23,6 +22,7 @@ const {
     proto,
     Browsers
 } = require("@whiskeysockets/baileys")
+const { createSimpleStore } = require('./lib/simple-store')
 const { color, bgcolor } = require('./lib/color')
 const colors = require('colors')
 const { start } = require('./lib/spinner')
@@ -46,7 +46,7 @@ settings: {},
 
 const owner = JSON.parse(fs.readFileSync('./database/owner.json'))
 
-const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) })
+const store = createSimpleStore()
 
 require('./XeonCheems8.js')
 nocache('./XeonCheems8.js', module => console.log(color('[ CHANGE ]', 'green'), color(`'${module}'`, 'green'), 'Updated'))
