@@ -23,7 +23,6 @@ modul: {
 	jsobfus: require('javascript-obfuscator'),
 	Jimp: require('jimp'),
 	jsdom: require('jsdom'),
-	keyeddb: require('@adiwajshing/keyed-db'),
 	lodash: require('lodash'),
 	moment: require('moment-timezone'),
 	ms: require('ms'),

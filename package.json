@@ -22,8 +22,6 @@
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "6.7.23",
-    "@adiwajshing/keyed-db": "^0.2.4",
-    "@bochilteam/scraper": "4.0.22-alpha.0",
     "@saipulanuar/jadianime-ts": "^2.0.0",
     "awesome-phonenumber": "^2.64.0",
     "anime-wallpaper": "^1.0.2",

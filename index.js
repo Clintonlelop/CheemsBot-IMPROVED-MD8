@@ -53,6 +53,22 @@ nocache('./XeonCheems8.js', module => console.log(color('[ CHANGE ]', 'green'), 
 
 let reconnecting = false
 let reconnectAttempts = 0
+const maxReconnectAttempts = 5
+
+const scheduleReconnect = () => {
+	if (reconnectAttempts >= maxReconnectAttempts) {
+		console.log('Reconnect limit reached; keeping the current session offline.')
+		reconnecting = false
+		return
+	}
+
+	const retryDelay = Math.min(3000 * (2 ** reconnectAttempts), 60000)
+	reconnectAttempts += 1
+	setTimeout(() => {
+		reconnecting = false
+		XeonBotIncBot().catch((err) => console.log('Reconnect failed:', err))
+	}, retryDelay)
+}
 
 async function XeonBotIncBot() {
 	if (reconnecting) return
@@ -89,10 +105,10 @@ async function XeonBotIncBot() {
         syncFullHistory: true,
         connectTimeoutMs: 60000,
         defaultQueryTimeoutMs: 60000,
-        getMessage: async (key) => {
-            if (store) {
-                const msg = await store.loadMessage(key.remoteJid, key.id)
-                return msg.message || undefined
+	        getMessage: async (key) => {
+	            if (store) {
+	                const msg = await store.loadMessage(key.remoteJid, key.id)
+	                return msg?.message
             }
             return {
                 conversation: "Cheems Bot Here"
@@ -141,16 +157,7 @@ try{
 			} else {
 				console.log(`Unknown DisconnectReason: ${reason}|${connection}`)
 			}
-			if (reconnectAttempts >= 1) {
-				console.log('Reconnect limit reached; keeping the current session offline.')
-				reconnecting = false
-				return
-			}
-			reconnectAttempts += 1
-			setTimeout(() => {
-				reconnecting = false
-				XeonBotIncBot().catch(() => {})
-			}, 3000)
+				scheduleReconnect()
 			return
 		}
 		if (update.connection == "connecting" || update.receivedPendingNotifications == "false") {
@@ -172,9 +179,10 @@ try{
             console.log(color(`${themeemoji} CREDIT: ${wm}\n`,'magenta'))
 		}
 	
-} catch (err) {
+	} catch (err) {
 	  console.log('Error in Connection.update '+err)
-	  XeonBotIncBot();
+	  reconnecting = false
+	  scheduleReconnect()
 	}
 	
 })
@@ -714,7 +722,11 @@ return XeonBotInc
 
 }
 
-XeonBotIncBot()
+XeonBotIncBot().catch((err) => {
+	console.log('Initial connection failed:', err)
+	reconnecting = false
+	scheduleReconnect()
+})
 
 process.on('uncaughtException', function (err) {
 console.log('Caught exception: ', err)
